@@ -7,7 +7,7 @@ function Home() {
   const navigate = useNavigate();
   return (
     <div>
-      <div>Home</div>
+      <div>Home </div>
       <br />
       <ButtonComponent
         label="Deslogar"
