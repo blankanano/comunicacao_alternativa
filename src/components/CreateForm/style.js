@@ -8,8 +8,8 @@ export const Form = styled.form`
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
-  align-content: space-between;
-  min-height: 100%;
+  min-height: 86vh;
+  justify-content: space-between;
 `;
 
 export const Group = styled.div`
@@ -26,6 +26,7 @@ export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
 
   input {
     font-size: 18px;
@@ -36,5 +37,27 @@ export const InputGroup = styled.div`
     background-color: var(--color-blue-light);
     border-radius: 4px;
     border: none;
+  }
+
+  img {
+    position: absolute;
+    width: 250px;
+    height: 175px;
+    top: 70px;
+    left: 16px;
+    object-fit: contain;
+  }
+`;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    font-size: 18px;
+    padding: 10px 31px;
+    background-color: var(--color-blue-light);
+    border: none;
+    border-radius: 8px;
   }
 `;

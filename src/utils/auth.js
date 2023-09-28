@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { DataModel } from "../data/datamodel";
 import baseCategories from "../data/basedata";
+import { saveImageB64 } from "./storage";
 
 export const userIsLoggedIn = async (firebaseApp) => {
   const dataModel = new DataModel("user", firebaseApp);
@@ -20,6 +21,7 @@ const verifyLogin = async (currentPath, navigate, firebaseApp) => {
   const needLoginRoutes = ["/", "/category", "/image", "/category/create"];
   const loggoutRoutes = ["/login", "/register", "/recovery-password"];
   const isLoggedIn = await userIsLoggedIn(firebaseApp);
+  console.log(currentPath);
   if (!!isLoggedIn && loggoutRoutes.includes(currentPath)) {
     navigate("/");
     return true;
@@ -109,8 +111,36 @@ const logout = async (firebaseApp, navigate) => {
 const saveUserInDatabase = async (firebaseApp, user) => {
   const userDataModel = new DataModel("user", firebaseApp);
   userDataModel.create(user);
-  const categoryDataModel = new DataModel("category", firebaseApp);
-  categoryDataModel.create({ category: baseCategories, uid: user.uid }, true);
+  baseCategories.forEach((x) => {
+    const categoryDataModel = new DataModel("category", firebaseApp);
+    categoryDataModel.create({ category: x, uid: user.uid }, true);
+  });
 };
 
-export { verifyLogin, login, logout, register };
+const createCategory = async (firebaseApp, data) => {
+  console.log("AQUI", data);
+  const user = getAuth(firebaseApp).currentUser;
+  if (user) {
+    data.photoURL = await convertB64ParaUrl(
+      firebaseApp,
+      data.photoURL,
+      user.uid
+    );
+    const dataModel = new DataModel("category", firebaseApp);
+    dataModel.create(
+      { category: { ...data, photo: data.photoURL }, uid: user.uid },
+      true
+    );
+    console.log("Criado");
+  }
+};
+
+const convertB64ParaUrl = async (firebaseApp, file, uid) => {
+  if (file.indexOf("data:image") > -1) {
+    return await saveImageB64(firebaseApp, file, uid);
+  } else {
+    return file;
+  }
+};
+
+export { verifyLogin, login, logout, register, createCategory };

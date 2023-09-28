@@ -1,11 +1,4 @@
-import {
-  getDatabase,
-  ref,
-  set,
-  update,
-  child,
-  onValue,
-} from "firebase/database";
+import { getDatabase, ref, set, update, child } from "firebase/database";
 import { db } from "./database";
 
 export class DataModel {
@@ -13,18 +6,6 @@ export class DataModel {
     this.model = model;
     this.db = db;
     this.realtimeDb = getDatabase(firebaseApp);
-  }
-
-  async get(id, updates) {
-    const db = getDatabase();
-    const _ref = ref(db, `${this.model}/` + id);
-    onValue(_ref, (snapshot) => {
-      console.log(snapshot);
-      const data = snapshot.val();
-      for (const key of Object.keys(updates)) {
-        updates[key](data[key]);
-      }
-    });
   }
 
   async list() {
@@ -39,7 +20,9 @@ export class DataModel {
   }
 
   async create(data, saveLocal = false) {
-    set(ref(this.realtimeDb, `${this.model}/` + data.uid), data);
+    if (window.navigator.onLine) {
+      set(ref(this.realtimeDb, `${this.model}/` + data.uid), data);
+    }
 
     if (saveLocal) {
       await this.createLocal(data);
@@ -58,7 +41,7 @@ export class DataModel {
     update(dbRef, updates);
   }
 
-  async delete(id) {
+  async delete(id, deleteLocal = false) {
     ref(this.realtimeDb, `${this.model}/` + id).remove();
   }
 
@@ -67,12 +50,16 @@ export class DataModel {
   }
 
   async getLocalData(uid) {
-    const data = await this.getDbTable(this.model).toArray();
-    return data.filter((x) => x.uid === uid)[0];
+    let data = await this.getDbTable(this.model).toArray();
+    return data
+      .filter((x) => x.uid === uid)
+      .map((x) => {
+        return { ...x.category, id: x.id };
+      });
   }
 
-  async deleteLocal(condition) {
-    return await this.getDbTable(this.model).where(condition).delete();
+  async deleteLocal(id) {
+    return await this.getDbTable(this.model).where("id").equals(id).delete();
   }
 
   async clearDatabase(list = null) {

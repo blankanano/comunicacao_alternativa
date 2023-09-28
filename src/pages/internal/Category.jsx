@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, TypeHeader } from "../../components";
+import { Card, ModalComponent, TypeHeader } from "../../components";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { DataModel } from "../../data/datamodel";
@@ -11,21 +11,39 @@ async function getUser() {
   return user;
 }
 
+async function searchCategories(setCategories) {
+  const user = await getUser();
+  if (user) {
+    const uid = user.uid;
+    const dataModel = new DataModel("category", firebaseApp);
+    const data = await dataModel.getLocalData(uid);
+    setCategories(data);
+  }
+}
+
 function Category({ isHome = false }) {
   const [categories, setCategories] = React.useState([]);
+  const [showModal, setShowModal] = React.useState(false);
+  const [idToDelete, setIdToDelete] = React.useState();
   const navigate = useNavigate();
   React.useEffect(
     () => async () => {
-      const user = await getUser();
-      if (user) {
-        const uid = user.uid;
-        const dataModel = new DataModel("category", firebaseApp);
-        const data = await dataModel.getLocalData(uid);
-        setCategories(data.category);
-      }
+      await searchCategories(setCategories);
     },
     []
   );
+  const onHandlerDelete = async () => {
+    const dataModel = new DataModel("category", firebaseApp);
+    await dataModel.deleteLocal(idToDelete);
+    await searchCategories(setCategories);
+    onCloseModal();
+  };
+  const callModalDelete = (id) => {
+    setIdToDelete(id);
+    setShowModal(true);
+  };
+  const onCloseModal = () => setShowModal(false);
+  const callEditScreen = (id) => navigate(`/create?id=${id}`, {});
   return (
     <>
       {isHome ? (
@@ -38,12 +56,20 @@ function Category({ isHome = false }) {
           categories.map((item) => (
             <Card
               key={`${item.name}_${item.id}`}
-              id={item.id}
+              itemId={item.id}
               name={item.name}
               photo={item.photo}
+              baseCategory={!!!item.photoURL}
+              callModal={callModalDelete}
+              callEdit={callEditScreen}
             />
           ))}
       </Container>
+      <ModalComponent
+        open={showModal}
+        onConfirm={onHandlerDelete}
+        onClose={onCloseModal}
+      />
     </>
   );
 }

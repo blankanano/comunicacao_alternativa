@@ -1,18 +1,37 @@
 import React from "react";
 import * as S from "./style";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { createCategory } from "../../utils/auth";
+import { firebaseApp } from "../../utils/firebase.config";
 
 function CreateForm() {
   const [name, setName] = React.useState("");
-  const [photo, setPhoto] = React.useState();
-  console.log(photo);
+  const [photoURL, setPhotoURL] = React.useState();
+  const [searchParams, setSearchParams] = useSearchParams();
+  console.log(searchParams.get("id"));
+  // const [id, setId] = React.useState();
   const type = window.location.pathname.includes ? "Categoria" : "Imagem";
+  const navigate = useNavigate();
+  React.useEffect(() => {});
 
   function handleChange(e) {
-    console.log(e.target.files);
-    setPhoto(URL.createObjectURL(e.target.files[0]));
+    setPhotoURL(URL.createObjectURL(e.target.files[0]));
   }
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    if (!name || !photoURL) return;
+    await createCategory(firebaseApp, { name, photoURL });
+    navigate("/category");
+  };
+
+  const goBack = (e) => {
+    e.preventDefault();
+    navigate("/category");
+  };
+
   return (
-    <S.Form>
+    <S.Form onSubmit={(e) => handleCreate(e)}>
       <S.Content>
         <S.Group>
           <S.InputGroup>
@@ -33,9 +52,13 @@ function CreateForm() {
               onChange={(e) => handleChange(e)}
               placeholder={`Nome da ${type}`}
             />
+            <img src={photoURL} alt="" />
           </S.InputGroup>
         </S.Group>
-        <button>aaaaaa</button>
+        <S.ButtonGroup>
+          <button onClick={(e) => goBack(e)}>Cancelar</button>
+          <button onClick={(e) => handleCreate(e)}>Salvar</button>
+        </S.ButtonGroup>
       </S.Content>
     </S.Form>
   );

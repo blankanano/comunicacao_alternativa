@@ -53,8 +53,8 @@ function Menu() {
         </>
       ) : (
         <S.Header>
-          <ArrowBackIosIcon onClick={() => navigate(-1)} />
-          <div>Criar {currentPath === "category" ? "Categoria" : "Imagem"}</div>
+          <ArrowBackIosIcon onClick={() => navigate("/category")} />
+          <div>Criar Categoria</div>
           <div></div>
         </S.Header>
       )}
