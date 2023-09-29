@@ -7,4 +7,4 @@ export { default as Card } from "./Card";
 export { default as Menu } from "./Menu";
 export { default as TypeHeader } from "./TypeHeader";
 export { default as CreateForm } from "./CreateForm";
-export { default as ModalComponent } from "./ModalComponent";
+export { default as ModalComponent } from "./ModalComponent"
