@@ -1,18 +1,10 @@
 import React from "react";
-import { logout } from "../../utils/auth";
-import { useNavigate } from "react-router-dom";
-import { ButtonComponent } from "../../components";
+import Category from "./Category";
 
-function Home() {
-  const navigate = useNavigate();
+function Home({ setLoading }) {
   return (
     <div>
-      <div>Home </div>
-      <br />
-      <ButtonComponent
-        label="Deslogar"
-        onClick={() => logout(navigate)}
-      ></ButtonComponent>
+      <Category isHome={true} setLoading={setLoading} />
     </div>
   );
 }

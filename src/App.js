@@ -1,47 +1,50 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Suspense, useState } from "react";
-import Loading from "./components/Loading";
-import routes from "./routes";
+import React, { Suspense, useState } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
-const routesWithoutMenu = ["/"];
+import { firebaseApp } from "./utils/firebase.config";
+import { Loading } from "./components";
+import routes from "./routes";
+import { Menu } from "./components";
+import { verifyLogin } from "./utils/auth";
+const routesWithoutMenu = ["/login", "/register"];
 const loggoutRoutes = ["/login", "/register", "/recovery-password"];
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    setCurrentPath(location);
+    verifyLogin(window.location.pathname, navigate, firebaseApp);
+  }, [location]);
 
   return (
-    <Router>
+    <>
+      {!routesWithoutMenu.includes(currentPath) ? <Menu /> : null}
       <Suspense fallback={<Loading />}>
         <Routes>
-          {routes.map((route, idx) => (
-            <Route
-              key={`${idx}_rotas`}
-              exact
-              path={route.path}
-              element={
-                <route.element
-                  loggoutRoutes={loggoutRoutes}
-                  setCurrentPath={setCurrentPath}
-                />
-              }
-            />
-          ))}
+          {routes.map((route, idx) => {
+            return (
+              <Route
+                key={`${idx}_rotas`}
+                exact
+                path={route.path}
+                element={
+                  <route.element
+                    loggoutRoutes={loggoutRoutes}
+                    setCurrentPath={setCurrentPath}
+                    firebaseApp={firebaseApp}
+                    setLoading={setLoading}
+                  />
+                }
+              />
+            );
+          })}
         </Routes>
       </Suspense>
-      <br></br>
-      {!routesWithoutMenu.includes(currentPath)
-        ? routes.map((route, idx) => {
-            if (route.tab) {
-              return (
-                <Link key={`${idx}_menu`} to={route.path}>
-                  {route.title}
-                </Link>
-              );
-            }
-            return null;
-          })
-        : null}
-    </Router>
+      {loading && <Loading />}
+    </>
   );
 }
 
