@@ -7,6 +7,13 @@ import {
 import { DataModel } from "../data/datamodel";
 import baseCategories from "../data/basedata";
 import { saveImageB64 } from "./storage";
+import {
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+  listAll,
+  deleteObject,
+} from "firebase/storage";
 
 export const userIsLoggedIn = async (firebaseApp) => {
   const dataModel = new DataModel("user", firebaseApp);
@@ -18,10 +25,15 @@ export const userIsLoggedIn = async (firebaseApp) => {
 };
 
 const verifyLogin = async (currentPath, navigate, firebaseApp) => {
-  const needLoginRoutes = ["/", "/category", "/image", "/category/create"];
+  const needLoginRoutes = [
+    "/",
+    "/category",
+    "/image",
+    "/category/create",
+    "/edit/category",
+  ];
   const loggoutRoutes = ["/login", "/register", "/recovery-password"];
   const isLoggedIn = await userIsLoggedIn(firebaseApp);
-  console.log(currentPath);
   if (!!isLoggedIn && loggoutRoutes.includes(currentPath)) {
     navigate("/");
     return true;
@@ -117,9 +129,9 @@ const saveUserInDatabase = async (firebaseApp, user) => {
   });
 };
 
-const createCategory = async (firebaseApp, data) => {
-  console.log("AQUI", data);
+const createCategory = async (firebaseApp, data, file, storage) => {
   const user = getAuth(firebaseApp).currentUser;
+
   if (user) {
     data.photoURL = await convertB64ParaUrl(
       firebaseApp,
@@ -127,11 +139,97 @@ const createCategory = async (firebaseApp, data) => {
       user.uid
     );
     const dataModel = new DataModel("category", firebaseApp);
-    dataModel.create(
+    data.id = await dataModel.create(
       { category: { ...data, photo: data.photoURL }, uid: user.uid },
       true
     );
-    console.log("Criado");
+
+    if (window.navigator.onLine) {
+      const storageRef = ref(
+        storage,
+        `category/${user.uid}/${data.id}/${data.name}`
+      );
+      const uploadCategory = uploadBytesResumable(storageRef, file);
+
+      await uploadCategory.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadCategory.snapshot.ref).then((downloadURL) => {
+            data.photoURL = downloadURL;
+            updateCategory(firebaseApp, data);
+          });
+        }
+      );
+    }
+  }
+};
+
+const updateCategory = async (
+  firebaseApp,
+  data,
+  file = null,
+  storage = null
+) => {
+  const user = getAuth(firebaseApp).currentUser;
+  if (user) {
+    if (file) {
+      const storageRef = ref(
+        storage,
+        `category/${user.uid}/${data.id}/${data.name}`
+      );
+      const uploadCategory = uploadBytesResumable(storageRef, file);
+
+      await uploadCategory.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadCategory.snapshot.ref).then((downloadURL) => {
+            data.photoURL = downloadURL;
+            updateCategory(firebaseApp, data);
+          });
+        }
+      );
+    }
+    data.photoURL = await convertB64ParaUrl(
+      firebaseApp,
+      data.photoURL,
+      user.uid
+    );
+    const dataModel = new DataModel("category", firebaseApp);
+    dataModel.update(
+      { category: { ...data, photo: data.photoURL }, uid: user.uid },
+      data.id
+    );
+  }
+};
+
+const getStorageImages = async (uid, storage) => {
+  const storageRef = ref(storage, `category/${uid}`);
+  const result = await listAll(storageRef);
+
+  const urlPromises = result.items.map((imageRef) => getDownloadURL(imageRef));
+
+  return Promise.all(urlPromises);
+};
+
+const deleteFile = (firebaseApp, storage, data) => {
+  const user = getAuth(firebaseApp).currentUser;
+  if (user) {
+    const desertRef = ref(
+      storage,
+      `category/${user.uid}/${data.id}/${data.name}`
+    );
+
+    deleteObject(desertRef)
+      .then(() => {})
+      .catch((error) => {});
   }
 };
 
@@ -143,4 +241,13 @@ const convertB64ParaUrl = async (firebaseApp, file, uid) => {
   }
 };
 
-export { verifyLogin, login, logout, register, createCategory };
+export {
+  verifyLogin,
+  login,
+  logout,
+  register,
+  createCategory,
+  updateCategory,
+  getStorageImages,
+  deleteFile,
+};

@@ -3,8 +3,8 @@ import { Card, ModalComponent, TypeHeader } from "../../components";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { DataModel } from "../../data/datamodel";
-import { firebaseApp } from "../../utils/firebase.config";
-import { userIsLoggedIn } from "../../utils/auth";
+import { firebaseApp, storage } from "../../utils/firebase.config";
+import { userIsLoggedIn, deleteFile } from "../../utils/auth";
 
 async function getUser() {
   const user = await userIsLoggedIn(firebaseApp);
@@ -21,29 +21,34 @@ async function searchCategories(setCategories) {
   }
 }
 
-function Category({ isHome = false }) {
+function Category({ isHome = false, setLoading }) {
   const [categories, setCategories] = React.useState([]);
   const [showModal, setShowModal] = React.useState(false);
-  const [idToDelete, setIdToDelete] = React.useState();
+  const [itemToDelete, setItemToDelete] = React.useState();
   const navigate = useNavigate();
   React.useEffect(
     () => async () => {
+      setLoading(true);
       await searchCategories(setCategories);
+      setLoading(false);
     },
-    []
+    [setLoading]
   );
   const onHandlerDelete = async () => {
+    setLoading(true);
     const dataModel = new DataModel("category", firebaseApp);
-    await dataModel.deleteLocal(idToDelete);
+    await dataModel.deleteLocal(itemToDelete.id);
+    await deleteFile(firebaseApp, storage, itemToDelete);
     await searchCategories(setCategories);
     onCloseModal();
+    setLoading(false);
   };
-  const callModalDelete = (id) => {
-    setIdToDelete(id);
+  const callModalDelete = (item) => {
+    setItemToDelete(item);
     setShowModal(true);
   };
   const onCloseModal = () => setShowModal(false);
-  const callEditScreen = (id) => navigate(`/create?id=${id}`, {});
+  const callEditScreen = (id) => navigate(`/edit/category?id=${id}`, {});
   return (
     <>
       {isHome ? (

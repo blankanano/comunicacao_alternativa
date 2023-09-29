@@ -11,6 +11,7 @@ const routes = [
   { path: "/", element: Home, title: "Home" },
   { path: "/category", element: Category, title: "Category" },
   { path: "/category/create", element: Create, title: "Create" },
+  { path: "/edit/category", element: Create, title: "Create" },
   { path: "/login", element: Login, title: "Login" },
   { path: "/register", element: Register, title: "Registro" },
   { path: "*", element: NotFound, title: "Página não encontrada" },

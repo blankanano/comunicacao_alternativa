@@ -3,7 +3,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import * as S from "./style";
-import { useNavigate } from "react-router-dom";
 
 function Card({ itemId, name, photo, baseCategory, callModal, callEdit }) {
   return (
@@ -13,7 +12,7 @@ function Card({ itemId, name, photo, baseCategory, callModal, callEdit }) {
         {baseCategory ? (
           <div />
         ) : (
-          <DeleteIcon onClick={() => callModal(itemId)} />
+          <DeleteIcon onClick={() => callModal({ id: itemId, name })} />
         )}
       </S.CardHeader>
       <S.CardContent>

@@ -2,7 +2,7 @@ import React, { Suspense, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
 import { firebaseApp } from "./utils/firebase.config";
-import Loading from "./components/Loading";
+import { Loading } from "./components";
 import routes from "./routes";
 import { Menu } from "./components";
 import { verifyLogin } from "./utils/auth";
@@ -11,11 +11,11 @@ const loggoutRoutes = ["/login", "/register", "/recovery-password"];
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   React.useEffect(() => {
     setCurrentPath(location);
-
     verifyLogin(window.location.pathname, navigate, firebaseApp);
   }, [location]);
 
@@ -35,6 +35,7 @@ function App() {
                     loggoutRoutes={loggoutRoutes}
                     setCurrentPath={setCurrentPath}
                     firebaseApp={firebaseApp}
+                    setLoading={setLoading}
                   />
                 }
               />
@@ -42,6 +43,7 @@ function App() {
           })}
         </Routes>
       </Suspense>
+      {loading && <Loading />}
     </>
   );
 }

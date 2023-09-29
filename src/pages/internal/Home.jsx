@@ -1,10 +1,10 @@
 import React from "react";
 import Category from "./Category";
 
-function Home() {
+function Home({ setLoading }) {
   return (
     <div>
-      <Category isHome={true} />
+      <Category isHome={true} setLoading={setLoading} />
     </div>
   );
 }

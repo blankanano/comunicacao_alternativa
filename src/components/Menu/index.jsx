@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import HomeIcon from "@mui/icons-material/Home";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import CollectionsIcon from "@mui/icons-material/Collections";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 import * as S from "./style";
@@ -22,10 +21,18 @@ function Menu() {
   const goTo = (path) => {
     if (currentPath !== path) navigate(path);
   };
+  const verifyPath = () => {
+    if (currentPath === "/category/create") {
+      return false;
+    } else if (currentPath.indexOf("edit") > 0) {
+      return false;
+    }
+    return true;
+  };
 
   return (
-    <S.Container path={currentPath}>
-      {!currentPath.includes("create") ? (
+    <S.Container path={verifyPath()}>
+      {verifyPath() ? (
         <>
           <S.Header>
             <div>Comunicação Alternativa</div>
@@ -43,18 +50,14 @@ function Menu() {
             >
               <LibraryBooksIcon />
             </S.MenuIcon>
-            <S.MenuIcon
-              path={currentPath === "/images"}
-              onClick={() => goTo("/images")}
-            >
-              <CollectionsIcon />
-            </S.MenuIcon>
           </S.MenuList>
         </>
       ) : (
         <S.Header>
           <ArrowBackIosIcon onClick={() => navigate("/category")} />
-          <div>Criar Categoria</div>
+          <div>
+            {currentPath.indexOf("edit") > 0 ? "Editar" : "Criar"} Categoria
+          </div>
           <div></div>
         </S.Header>
       )}

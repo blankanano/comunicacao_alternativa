@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  height: ${(props) => (props.path.includes("create") ? "50px" : "90px")};
+  height: ${(props) => (!props.path ? "50px" : "90px")};
   background-color: var(--color-blue-light);
   display: flex;
   flex-direction: column;

@@ -12,7 +12,6 @@ function ModalComponent({ open, onConfirm, onClose }) {
             <button onClick={() => onConfirm()}>Deletar</button>
           </div>
         </S.Modal>
-        ;
       </S.ContainerModal>
     )
   );

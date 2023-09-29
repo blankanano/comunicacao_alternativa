@@ -1,4 +1,4 @@
-export { default as Loading } from "./Loading";
+export { default as Loading } from "./LoadingComponent";
 export { default as TextFieldComponent } from "./TextField";
 export { default as ButtonComponent } from "./Button";
 export { default as BoxComponent } from "./BoxComponent";

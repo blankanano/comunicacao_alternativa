@@ -1,4 +1,4 @@
-import { getDatabase, ref, set, update, child } from "firebase/database";
+import { getDatabase, ref, set, child } from "firebase/database";
 import { db } from "./database";
 
 export class DataModel {
@@ -25,23 +25,19 @@ export class DataModel {
     }
 
     if (saveLocal) {
-      await this.createLocal(data);
+      const id = await this.createLocal(data);
+      return id;
     }
   }
 
   async update(data, id) {
-    const dbRef = ref(this.realtimeDb);
-
-    const updates = {};
-
-    for (let key of Object.keys(data)) {
-      updates[`${this.model}/${id}/${key}`] = data[key];
-    }
-
-    update(dbRef, updates);
+    await this.getDbTable(this.model).put({
+      id: id,
+      ...data,
+    });
   }
 
-  async delete(id, deleteLocal = false) {
+  async delete(id) {
     ref(this.realtimeDb, `${this.model}/` + id).remove();
   }
 
@@ -56,6 +52,16 @@ export class DataModel {
       .map((x) => {
         return { ...x.category, id: x.id };
       });
+  }
+
+  async getLocalDataById(uid, id) {
+    let data = await this.getDbTable(this.model).toArray();
+    return data
+      .filter((x) => x.uid === uid)
+      .map((x) => {
+        return { ...x.category, id: x.id };
+      })
+      .filter((x) => x.id === +id);
   }
 
   async deleteLocal(id) {
@@ -79,7 +85,8 @@ export class DataModel {
         ...data,
       });
     } else {
-      await this.getDbTable(this.model).put(data);
+      const id = await this.getDbTable(this.model).put(data);
+      return id;
     }
   }
 
