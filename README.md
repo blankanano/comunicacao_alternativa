@@ -8,33 +8,13 @@
 
 > React site Acompanhamento Estudantil
 
-### Sobre o Acompanhamento Estudantil
+### Comunicação Alternativa
 
 Projeto para contemplar a ﬁnalização da matéria.
 
 Este site foi desenvolvido para atender os requisitos do módulo de desenvolvimento de Apps Híbridos com PWA e fornece nessa primeira versão um site em React.js e leitura de dados locais com Dexie e on-line com ﬁrebase. Gostaria de salientar que, por não conhecer a linguagem, tive muita dificuldade para entender e consequentemente realizar o que foi pedido. Porém, gostei e pretendo buscar mais conhecimento e assim fazer um projeto melhor futuramente.
 
 <br/>
-
-## Prerequisites
-
-List things you need to use the software and how to install them.
-
-- ### [x] nodejs
-
-<br/>
-
-## Install dependencies
-
-```sh
-npm install
-```
-
-## Run app
-
-```sh
-npm run start
-```
 
 <h3 align="left">Languages ​​and tools used in the project:</h3>
 
