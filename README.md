@@ -10,8 +10,9 @@
 
 ### Sobre o Acompanhamento Estudantil
 
-Este site foi desenvolvido para atender os requisitos do módulo de desenvolvimento de Apps Híbridos com PWA e fornece nessa primeira versão um site em React.js e leitura de dados locais com Dexie e on-line com firebase.
-É possivel ver a versão em deploy
+Projeto para contemplar a ﬁnalização da matéria.
+
+Este site foi desenvolvido para atender os requisitos do módulo de desenvolvimento de Apps Híbridos com PWA e fornece nessa primeira versão um site em React.js e leitura de dados locais com Dexie e on-line com ﬁrebase. Gostaria de salientar que, por não conhecer a linguagem, tive muita dificuldade para entender e consequentemente realizar o que foi pedido. Porém, gostei e pretendo buscar mais conhecimento e assim fazer um projeto melhor futuramente.
 
 <br/>
 
@@ -40,15 +41,3 @@ npm run start
 [![My Skills](https://skillicons.dev/icons?i=react,firebase,materialui,styledcomponents)](https://skillicons.dev)
 
 <br/>
-
-## Author
-
-👤 **William soares**
-
-- Website: https://www.linkedin.com/in/william-soares-de-lima-4ab619164
-- Github: [@williamsoaresdelima](https://github.com/williamsoaresdelima)
-- LinkedIn: [@William Soares](https://linkedin.com/in/William Soares)
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/williamsoaresdelima/namoro-pet/issues).
